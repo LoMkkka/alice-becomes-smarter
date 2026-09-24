@@ -109,13 +109,13 @@ curl http://127.0.0.1:8000/health
 Проверка webhook:
 
 ```bash
-./scripts/test_webhook.sh
+bash ./scripts/test_webhook.sh
 ```
 
 Или через публичный HTTPS:
 
 ```bash
-./scripts/test_webhook.sh https://SERVER_IP/webhook "Сколько будет 17 умножить на 23?"
+bash ./scripts/test_webhook.sh https://SERVER_IP/webhook "Сколько будет 17 умножить на 23?"
 ```
 
 Некоторые VPS не умеют обращаться к собственному публичному IP (hairpin/NAT loopback). Поэтому HTTPS лучше дополнительно проверить с телефона через мобильный интернет:
@@ -223,7 +223,7 @@ sudo systemctl restart alice-gpt
 ## Удаление
 
 ```bash
-sudo ./scripts/uninstall.sh
+sudo bash ./scripts/uninstall.sh
 ```
 
 Скрипт не удаляет API key, сертификаты и `/opt/alice-gpt` автоматически.
@@ -246,4 +246,4 @@ sudo ./scripts/uninstall.sh
 
 ## License
 
-MIT
+Apache License 2.0
