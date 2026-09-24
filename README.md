@@ -28,6 +28,8 @@ Groq API → Qwen
 - systemd + Nginx;
 - редактируемый `prompt.txt`;
 - `/health` для проверки состояния;
+- текущие дата и время с учётом часового пояса;
+- текущая погода и прогноз на завтра через Open-Meteo без отдельного API-ключа;
 - безопасный fallback при таймауте/ошибке модели.
 
 > Яндекс Диалоги ждут ответ навыка только **4,5 секунды**, поэтому в проекте стоит жёсткий таймаут модели 3,3 секунды. Поле `response.text` дополнительно ограничивается 1000 символами (лимит Яндекса — 1024).
@@ -67,7 +69,7 @@ chmod +x install.sh
 sudo ./install.sh
 ```
 
-Installer спросит публичный IPv4, email для Let's Encrypt, Groq API key и модель Groq.
+Installer спросит публичный IPv4, email для Let's Encrypt, Groq API key, модель Groq, домашний город для погоды и при желании домашний часовой пояс.
 
 После установки:
 
@@ -141,6 +143,44 @@ https://dialogs.yandex.ru/developer/
 
 Для домашнего использования выберите **Тип доступа → Приватный**. Не переключайте доступ на публичный, если не хотите размещать навык в каталоге.
 
+## Погода, дата и время
+
+Модель сама по себе не знает текущие дату, время и погоду. Проект обрабатывает эти запросы отдельно:
+
+- для времени и даты используется `meta.timezone`, который Яндекс передаёт вместе с запросом; при необходимости его можно переопределить через `HOME_TIMEZONE`;
+- запрос вида **«какая погода?»** использует `HOME_CITY`;
+- запрос вида **«какая погода в Казани?»** пытается взять город из сущности `YANDEX.GEO`;
+- погода загружается через Open-Meteo, отдельный API-ключ для обычного использования не требуется.
+
+После установки можно изменить домашние настройки:
+
+```bash
+sudo nano /etc/alice-gpt.env
+```
+
+Например:
+
+```env
+HOME_CITY=Москва
+HOME_TIMEZONE=Europe/Moscow
+```
+
+После изменения:
+
+```bash
+sudo systemctl restart alice-gpt
+```
+
+Проверки:
+
+```text
+Который час?
+Какая сегодня дата?
+Какая погода?
+Какая погода в Казани?
+Какая погода завтра?
+```
+
 ## Логи
 
 ```bash
@@ -181,9 +221,12 @@ sudo nano /etc/alice-gpt.env
 
 ```env
 GROQ_MODEL=qwen/qwen3.8-27b
-MODEL_TIMEOUT_SECONDS=3.3
+MODEL_TIMEOUT_SECONDS=3.0
 MAX_OUTPUT_TOKENS=120
 MAX_HISTORY_MESSAGES=10
+HOME_CITY=Москва
+HOME_TIMEZONE=Europe/Moscow
+WEATHER_TIMEOUT_SECONDS=1.0
 LOG_REQUESTS=false
 ```
 
@@ -243,6 +286,8 @@ sudo bash ./scripts/uninstall.sh
 - Let's Encrypt IP certificates: https://letsencrypt.org/2026/03/11/shorter-certs-certbot/
 - Groq OpenAI-compatible API: https://console.groq.com/docs/openai
 - Groq models: https://console.groq.com/docs/models
+- Open-Meteo Forecast API: https://open-meteo.com/en/docs
+- Open-Meteo Geocoding API: https://open-meteo.com/en/docs/geocoding-api
 
 ## License
 
