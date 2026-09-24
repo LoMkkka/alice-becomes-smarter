@@ -37,6 +37,9 @@ fi
 read -r -p "Groq model [qwen/qwen3.8-27b]: " GROQ_MODEL
 GROQ_MODEL="${GROQ_MODEL:-qwen/qwen3.8-27b}"
 
+read -r -p "Home city for weather (optional, e.g. Москва): " HOME_CITY
+read -r -p "Home timezone override (optional, e.g. Europe/Moscow): " HOME_TIMEZONE
+
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y python3 python3-venv python3-pip nginx curl ca-certificates
@@ -65,9 +68,12 @@ chown -R alicegpt:alicegpt "$APP_DIR"
 cat > "$ENV_FILE" <<EOF
 GROQ_API_KEY=$GROQ_API_KEY
 GROQ_MODEL=$GROQ_MODEL
-MODEL_TIMEOUT_SECONDS=3.3
+MODEL_TIMEOUT_SECONDS=3.0
 MAX_OUTPUT_TOKENS=120
 MAX_HISTORY_MESSAGES=10
+HOME_CITY=$HOME_CITY
+HOME_TIMEZONE=$HOME_TIMEZONE
+WEATHER_TIMEOUT_SECONDS=1.0
 LOG_REQUESTS=false
 PROMPT_FILE=/opt/alice-gpt/prompt.txt
 EOF
