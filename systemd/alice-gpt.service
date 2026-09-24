@@ -1,0 +1,19 @@
+[Unit]
+Description=Alice Groq Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=alicegpt
+Group=alicegpt
+WorkingDirectory=/opt/alice-gpt
+EnvironmentFile=/etc/alice-gpt.env
+ExecStart=/opt/alice-gpt/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
